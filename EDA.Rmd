@@ -1,0 +1,43 @@
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(ggcorrplot)
+library(corrplot)
+library(leaps)
+library(car)
+library(Metrics)
+library(reshape2)
+library(ggpubr)
+library(moments)
+```
+
+```{r}
+data <- read.csv("Life Expectancy Data.csv")
+head(data)
+```
+
+```{r}
+missing_counts <- data.frame(feature = factor(names(data)),
+                    counts=sapply(data, function(x) sum(is.na(x))))
+
+
+ggplot(missing_counts,
+       aes(x=counts, y=reorder(feature, -counts), fill=counts)) +
+                                  geom_bar(stat="identity") +
+                                  ggtitle("Missing Value Counts") +
+                                  xlab("Feature") + ylab("Missing count") +
+                                  theme(axis.text.x=element_text(angle=20, hjust=1))+
+                                  theme(text = element_text(size = 12))+
+                                  scale_fill_continuous()
+
+```
+
+```{r}
+plot(Life.expectancy~Schooling,data=data, main = "Schooling vs. Life Expectancy")
+```
+```{r}
+hist(data$Life.expectancy, 
+     xlab = "Life Expectancy",
+     main = "Distribution of Life Expectancy")
+```
+
