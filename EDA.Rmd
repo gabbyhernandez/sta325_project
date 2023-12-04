@@ -9,6 +9,7 @@ library(Metrics)
 library(reshape2)
 library(ggpubr)
 library(moments)
+library(dplyr)
 ```
 
 ```{r}
@@ -35,12 +36,63 @@ ggplot(missing_counts,
 ```{r}
 plot(Life.expectancy~Schooling,data=data, main = "Schooling vs. Life Expectancy")
 ```
+
 ```{r}
 hist(data$Life.expectancy, 
      xlab = "Life Expectancy",
      main = "Distribution of Life Expectancy")
 ```
+ 
+##Filling In Missing Values using imputation
+
+```{r}
+library(missForest)
+```
+
+Need to Drop Country And Year First (Can add them back later)
+```{r}
+columns_to_exclude <- c("Year", "Country")
+
+# Select all columns except the ones to exclude
+le <- data %>%
+  select(-one_of(columns_to_exclude))
+```
+
+Change necessary variables into factors
+```{r}
+le$Status <- as.factor(le$Status)
+```
+
+The missForest package is specifically designed for imputing missing data in datasets with mixed types of variables (numeric and categorical). It uses a random forest-based imputation method.
+```{r}
+imputed_data <- missForest(le)
+
+imputed_data <- imputed_data$ximp
+```
 
 
-#testing for commit
-hello
+##Split Data into Training and Testing
+```{r}
+set.seed(123) 
+
+train_indices <- sample(seq_len(nrow(imputed_data)), size = 0.7 * nrow(imputed_data))
+
+data_train <- imputed_data[train_indices, ]
+
+data_test <- imputed_data[-train_indices, ]
+```
+
+##Gabby EDA
+Explore Relationship Between Adult Mortality and Life Expectancy (Filled by Status)
+
+Explore Relationship Between Infant Deaths and Life Expectancy (Filled by Status)
+
+Explore Relationship Between Schooling and Life Expectancy (Filled by Status)
+
+Explore Relationship Between BMI and Life Expectancy (Filled by Status)
+
+Explore Relationship Between GDP and Life Expectancy (Filled by Status)
+
+##Emily EDA
+
+##Jessica EDA
