@@ -42,7 +42,7 @@ hist(data$Life.expectancy,
      xlab = "Life Expectancy",
      main = "Distribution of Life Expectancy")
 ```
- 
+
 ##Filling In Missing Values using imputation
 
 ```{r}
@@ -50,6 +50,7 @@ library(missForest)
 ```
 
 Need to Drop Country And Year First (Can add them back later)
+
 ```{r}
 columns_to_exclude <- c("Year", "Country")
 
@@ -59,19 +60,21 @@ le <- data %>%
 ```
 
 Change necessary variables into factors
+
 ```{r}
 le$Status <- as.factor(le$Status)
 ```
 
 The missForest package is specifically designed for imputing missing data in datasets with mixed types of variables (numeric and categorical). It uses a random forest-based imputation method.
+
 ```{r}
 imputed_data <- missForest(le)
 
 imputed_data <- imputed_data$ximp
 ```
 
-
 ##Split Data into Training and Testing
+
 ```{r}
 set.seed(123) 
 
@@ -82,8 +85,7 @@ data_train <- imputed_data[train_indices, ]
 data_test <- imputed_data[-train_indices, ]
 ```
 
-##Gabby EDA
-Explore Relationship Between Adult Mortality and Life Expectancy (Filled by Status)
+##Gabby EDA Explore Relationship Between Adult Mortality and Life Expectancy (Filled by Status)
 
 Explore Relationship Between Infant Deaths and Life Expectancy (Filled by Status)
 
@@ -94,5 +96,19 @@ Explore Relationship Between BMI and Life Expectancy (Filled by Status)
 Explore Relationship Between GDP and Life Expectancy (Filled by Status)
 
 ##Emily EDA
+
+How much has improvement in health (based on health predictors) lowered life expectancy?
+
+-   "It has been observed that in the past 15 years , there has been a huge development in health sector resulting in improvement of human mortality rates especially in the developing nations in comparison to the past 30 years."
+
+How does spending more money on health (ex: percentage expenditure or total expenditure) impact other factors that affect life expectancy?
+
+Explore relationship between Percentage Expenditure and Life Expectancy
+
+Explore relationship between Total Expenditure and Life Expectancy
+
+Explore relationship between Health Factors and Percentage Expenditure
+
+Explore relationship between Non-Health Factors and Percentage Expenditure
 
 ##Jessica EDA
