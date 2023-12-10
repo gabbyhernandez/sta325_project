@@ -25,8 +25,8 @@ missing_counts <- data.frame(feature = factor(names(data)),
 ggplot(missing_counts,
        aes(x=counts, y=reorder(feature, -counts), fill=counts)) +
                                   geom_bar(stat="identity") +
-                                  ggtitle("Missing Value Counts") +
-                                  xlab("Feature") + ylab("Missing count") +
+                                  ggtitle("Missing Value Counts for each Feature") +
+                                  xlab("Missing Count") + ylab("Feature") +
                                   theme(axis.text.x=element_text(angle=20, hjust=1))+
                                   theme(text = element_text(size = 12))+
                                   scale_fill_continuous()
@@ -97,18 +97,63 @@ Explore Relationship Between GDP and Life Expectancy (Filled by Status)
 
 ##Emily EDA
 
+```{r}
+# Mortality Group vs. Life Expectancy
+# how to plot interaction effects when it's all quantitative variables?
+plot(Life.expectancy~Adult.Mortality,data=data, main = "Adult Mortality vs. Life Expectancy")
+plot(Life.expectancy~Adult.Mortality,data=data, col = ifelse(data$Status == "Developed", "blue", "red"), main = "Adult Mortality vs. Life Expectancy")
+plot(Life.expectancy~Adult.Mortality,data=data, main = "Adult Mortality vs. Life Expectancy (subset)", xlim = c(0, 150))
+# a lot of clustered groups in adult mortality 
+plot(Life.expectancy~infant.deaths,data=data, main = "Infant Deaths vs. Life Expectancy")
+plot(Life.expectancy~infant.deaths,data=data, main = "Infant Deaths vs. Life Expectancy (subset)", xlim = c(0,100))
+# generally downward slope but more scattered
+plot(Life.expectancy~under.five.deaths,data=data, main = "Under 5 Deaths vs. Life Expectancy")
+plot(Life.expectancy~under.five.deaths,data=data, main = "Under 5 Deaths vs. Life Expectancy (subset)", xlim = c(0,100))
+# generally downward slope but more scattered
+```
+
+```{r}
+# countries where income composition = 0 
+# If the income composition of resources component of the HDI is reported as 0 for a country, it suggests that the country's income is not derived from the specific factors or resources considered in that component of the HDI
+adultmortality <- subset(data, Adult.Mortality < 150)
+adultmortality
+```
+
+```{r}
+# Economical Group vs. Life Expectancy 
+# Economical: %expenditure, total expenditure, GDP, income composition
+plot(Life.expectancy~percentage.expenditure,data=data, main = "Percentage Expenditure vs. Life Expectancy")
+plot(Life.expectancy~percentage.expenditure,data=data, main = "Percentage Expenditure vs. Life Expectancy (subset)", xlim = c(0,1000))
+# need to find the # of countries that spend 0% of expenditure on health
+# relatively linear 
+# need to find how they define % expenditure (bc values greater than 100)
+plot(Life.expectancy~Total.expenditure,data=data, main = "Total Expenditure vs. Life Expectancy")
+# very scattered
+plot(Life.expectancy~GDP,data=data, main = "GDP vs. Life Expectancy")
+plot(Life.expectancy~GDP,data=data, main = "GDP vs. Life Expectancy (subset)", xlim = c(0,20000))
+# relatively upward sloping 
+# Assuming 'data' is your data frame and 'Status' is the categorical variable for coloring
+plot(Life.expectancy ~ Income.composition.of.resources, data = data,
+     pch = ifelse(data$Status == "Developed", 16, 17),
+     main = "Income Composition of Resources vs. Life Expectancy",
+     xlab = "Income Composition of Resources",
+     ylab = "Life Expectancy",
+     col = ifelse(data$Status == "Developed", "blue", "red"))
+# higher = better (more diverse in income, more economic stability)
+# remove total expenditure??
+```
+
+```{r}
+# countries where income composition = 0 
+# If the income composition of resources component of the HDI is reported as 0 for a country, it suggests that the country's income is not derived from the specific factors or resources considered in that component of the HDI
+countries_with_zero_income <- subset(data, Income.composition.of.resources == 0)
+countries_with_zero_income
+```
+
 How much has improvement in health (based on health predictors) lowered life expectancy?
 
 -   "It has been observed that in the past 15 years , there has been a huge development in health sector resulting in improvement of human mortality rates especially in the developing nations in comparison to the past 30 years."
 
 How does spending more money on health (ex: percentage expenditure or total expenditure) impact other factors that affect life expectancy?
-
-Explore relationship between Percentage Expenditure and Life Expectancy
-
-Explore relationship between Total Expenditure and Life Expectancy
-
-Explore relationship between Health Factors and Percentage Expenditure
-
-Explore relationship between Non-Health Factors and Percentage Expenditure
 
 ##Jessica EDA
