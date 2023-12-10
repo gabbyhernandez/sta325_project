@@ -86,14 +86,18 @@ data_test <- imputed_data[-train_indices, ]
 ```
 
 ##Gabby EDA Explore Relationship Between Adult Mortality and Life Expectancy (Filled by Status)
+Looking for general trends between immunizations and life expectancy:
+```{r}
+data$Measles <- pmin(data$Measles, 1000)
+data$Polio <- pmin(data$Polio, 1000)
 
-Explore Relationship Between Infant Deaths and Life Expectancy (Filled by Status)
+plot(Life.expectancy~Hepatitis.B,data=data, main = "Hepatitis B Immunization Among 1-Year-Olds (%) vs. Life Expectancy")
+plot(Life.expectancy~Measles,data=data, fill = Status, main = "# Reported Measles cases (per 1000) vs. Life Expectancy")
+plot(Life.expectancy~Polio,data=data, main = "# Reported Polio cases (per 1000) vs. Life Expectancy")
+plot(Life.expectancy~Diphtheria,data=data, main = "DTP3 Immunization Among 1-Year-Olds (%) vs. Life Expectancy")
 
-Explore Relationship Between Schooling and Life Expectancy (Filled by Status)
+```
 
-Explore Relationship Between BMI and Life Expectancy (Filled by Status)
-
-Explore Relationship Between GDP and Life Expectancy (Filled by Status)
 
 ##Emily EDA
 
