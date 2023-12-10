@@ -161,3 +161,67 @@ How much has improvement in health (based on health predictors) lowered life exp
 How does spending more money on health (ex: percentage expenditure or total expenditure) impact other factors that affect life expectancy?
 
 ##Jessica EDA
+
+Social: status, alcohol, population, BMI, thinness(10-19), thinness(5-9), schooling
+
+EDA:
+predictors vs response
+```{r}
+# Install and load necessary libraries
+library(ggplot2)
+library(dplyr)
+
+model <- lm(data$`Life.expectancy` ~ `Status` + `Alcohol` + `Population` + `BMI` + thinness..1.19.years + thinness.5.9.years + `Schooling`, data = data)
+
+# Summarize the model
+summary(model)
+```
+
+
+status vs response
+```{r}
+data$Status <- as.factor(data$Status)
+plot(Life.expectancy ~ Status, data = data, 
+     col = ifelse(data$Status == "Developed", "blue", "red"),
+     main = "Status vs. Life Expectancy",
+     xlab = "Status", ylab = "Life Expectancy")
+```
+
+
+alcohol vs response
+
+```{r}
+plot(Life.expectancy~Alcohol,data=data, main = "Scatter Plot of Alcohol Consumption vs. Life Expectancy",
+     xlab = "Alcohol Consumption", ylab = "Life Expectancy")
+```
+
+population vs response
+```{r}
+plot(Life.expectancy~Population,data=data, main = "Scatter Plot of Population vs. Life Expectancy",
+     xlab = "Population", ylab = "Life Expectancy")
+```
+
+BMI  vs response
+```{r}
+plot(Life.expectancy~BMI,data=data, main = "Scatter Plot of BMI vs. Life Expectancy",
+     xlab = "BMI", ylab = "Life Expectancy")
+```
+
+thinness (10-19) vs response
+- NA values: dropped
+```{r}
+plot(Life.expectancy~thinness..1.19.years,data=data, main = "Thinness 10-19 years vs. Life Expectancy",
+     xlab = "Thinness 10-19 years", ylab = "Life Expectancy")
+```
+
+thinness (5-9) vs response
+```{r}
+plot(Life.expectancy~thinness.5.9.years,data=data, main = "Scatter Plot of Thinness 5-9 years vs. Life Expectancy",
+     xlab = "Thinness 5-9 years", ylab = "Life Expectancy")
+```
+
+schooling vs response
+```{r}
+plot(Life.expectancy~Schooling,data=data, main = "Schooling vs. Life Expectancy",
+     xlab = "Schooling", ylab = "Life Expectancy")
+```
