@@ -214,4 +214,13 @@ fit <- grpreg(X, y, groups = group_indices, penalty = "grLasso")
 
 # Display coefficients
 coef(fit)
+
+#Find best lambda and coefficients
+set.seed(123)
+
+cv_fit <- cv.grpreg(X, y, groups = group_indices, penalty = "grLasso")
+best_lambda <- cv_fit$lambda.min
+best_coef <- coef(cv_fit, s = best_lambda)
+best_lambda
+best_coef
 ```
