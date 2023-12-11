@@ -196,3 +196,21 @@ plot(Life.expectancy~thinness.5.9.years,data=data, main = "Scatter Plot of Thinn
 plot(Life.expectancy~Schooling,data=data, main = "Schooling vs. Life Expectancy",
      xlab = "Schooling", ylab = "Life Expectancy")
 ```
+
+
+
+Group Lasso code:
+
+```{r}
+library(grplasso)
+X <- imputed_data[, c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "percentage.expenditure", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI", "Schooling")]
+X <- as.matrix(X)
+y <- imputed_data$Life.expectancy
+group_indices <- list(c(1, 2, 3), c(4, 5, 6), c(7, 8, 9), c(10, 11, 12,13))
+fit <- grplasso(X, y = y, group = group_indices, model = LogReg(), lambda = 20,
+                center = TRUE, standardize = TRUE)
+coef(fit)
+cvfit <- cv.grplasso(X, y = y, group = group_indices, model = LogReg())
+cvfit$lambda.min
+plot(cvfit)
+```
