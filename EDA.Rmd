@@ -45,6 +45,8 @@ plot(Life.expectancy~Schooling,data=data, main = "Schooling vs. Life Expectancy"
 hist(data$Life.expectancy, 
      xlab = "Life Expectancy",
      main = "Distribution of Life Expectancy")
+summary(data$Life.expectancy)
+
 ```
 
 ##Filling In Missing Values using imputation
