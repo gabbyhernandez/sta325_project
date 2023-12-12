@@ -1,3 +1,7 @@
+---
+---
+---
+
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(ggplot2)
@@ -47,6 +51,8 @@ hist(data$Life.expectancy,
 
 ```{r}
 library(missForest)
+library(dplyr)
+class(data)
 ```
 
 Need to Drop Country And Year First (Can add them back later)
@@ -55,8 +61,7 @@ Need to Drop Country And Year First (Can add them back later)
 columns_to_exclude <- c("Year", "Country")
 
 # Select all columns except the ones to exclude
-le <- data %>%
-  select(-one_of(columns_to_exclude))
+le <- data %>% dplyr::select(-one_of(columns_to_exclude))
 ```
 
 Change necessary variables into factors
@@ -85,6 +90,28 @@ data_train <- imputed_data[train_indices, ]
 data_test <- imputed_data[-train_indices, ]
 ```
 
+```{r}
+library(corrplot)
+```
+
+```{r}
+columns_to_exclude <- c("Year", "Country","Status")
+numericcol <- imputed_data %>% dplyr::select(-one_of(columns_to_exclude))
+M = cor(numericcol)
+# Set up a larger plotting area
+par(mfrow = c(1, 1))  # You can adjust the number of rows and columns as needed
+layout(matrix(1:1, nrow = 1, ncol = 1))
+
+# Set the dimensions for the PNG file
+png("correlation_plot.png", width = 2000, height = 2000, res = 150)
+
+# Create a colorful number correlation plot
+corrplot(M, method = 'number', type = 'upper', tl.col = 'black', tl.srt = 45, mar = c(0, 0, 2, 0))
+
+# Close the PNG device
+dev.off()
+```
+
 ##Gabby EDA Explore Relationship Between Adult Mortality and Life Expectancy (Filled by Status) Looking for general trends between immunizations and life expectancy:
 
 ```{r}
@@ -111,7 +138,7 @@ plot(Life.expectancy~infant.deaths,data=data, main = "Infant Deaths vs. Life Exp
 plot(Life.expectancy~infant.deaths,data=data, main = "Infant Deaths vs. Life Expectancy (subset)", xlim = c(0,100))
 # generally downward slope but more scattered
 plot(Life.expectancy~under.five.deaths,data=data, main = "Under 5 Deaths vs. Life Expectancy")
-plot(Life.expectancy~under.five.deaths,data=data, main = "Under 5 Deaths vs. Life Expectancy (subset)", xlim = c(0,100))
+plot(Life.expectancy~under.five.deaths,data=data, main = "Under 5 Deaths vs. Life Expectancy (subset)", xlim = c(0,1000))
 # generally downward slope but more scattered
 plot(Life.expectancy~HIV.AIDS,data=data, main = "Deaths Caused by HIV/AIDS vs. Life Expectancy")
 
@@ -138,6 +165,7 @@ plot(Life.expectancy~GDP,data=data, main = "GDP vs. Life Expectancy")
 plot(Life.expectancy~GDP,data=data, main = "GDP vs. Life Expectancy (subset)", xlim = c(0,20000))
 # relatively upward sloping 
 # Assuming 'data' is your data frame and 'Status' is the categorical variable for coloring
+plot(Life.expectancy~Income.composition.of.resources,data=data, main = "Income Composition of Resources vs. Life Expectancy")
 plot(Life.expectancy ~ Income.composition.of.resources, data = data,
      pch = ifelse(data$Status == "Developed", 16, 17),
      main = "Income Composition of Resources vs. Life Expectancy",
@@ -197,8 +225,6 @@ plot(Life.expectancy~thinness.5.9.years,data=data, main = "Scatter Plot of Thinn
 plot(Life.expectancy~Schooling,data=data, main = "Schooling vs. Life Expectancy",
      xlab = "Schooling", ylab = "Life Expectancy")
 ```
-
-
 
 Group Lasso code:
 
