@@ -85,8 +85,8 @@ data_train <- imputed_data[train_indices, ]
 data_test <- imputed_data[-train_indices, ]
 ```
 
-##Gabby EDA Explore Relationship Between Adult Mortality and Life Expectancy (Filled by Status)
-Looking for general trends between immunizations and life expectancy:
+##Gabby EDA Explore Relationship Between Adult Mortality and Life Expectancy (Filled by Status) Looking for general trends between immunizations and life expectancy:
+
 ```{r}
 data$Measles <- pmin(data$Measles, 1000)
 data$Polio <- pmin(data$Polio, 1000)
@@ -97,7 +97,6 @@ plot(Life.expectancy~Polio,data=data, main = "# Reported Polio cases (per 1000) 
 plot(Life.expectancy~Diphtheria,data=data, main = "DTP3 Immunization Among 1-Year-Olds (%) vs. Life Expectancy")
 
 ```
-
 
 ##Emily EDA
 
@@ -114,6 +113,8 @@ plot(Life.expectancy~infant.deaths,data=data, main = "Infant Deaths vs. Life Exp
 plot(Life.expectancy~under.five.deaths,data=data, main = "Under 5 Deaths vs. Life Expectancy")
 plot(Life.expectancy~under.five.deaths,data=data, main = "Under 5 Deaths vs. Life Expectancy (subset)", xlim = c(0,100))
 # generally downward slope but more scattered
+plot(Life.expectancy~HIV.AIDS,data=data, main = "Deaths Caused by HIV/AIDS vs. Life Expectancy")
+
 ```
 
 ```{r}
@@ -164,8 +165,8 @@ How does spending more money on health (ex: percentage expenditure or total expe
 
 Social: status, alcohol, population, BMI, thinness(10-19), thinness(5-9), schooling
 
-EDA:
-predictors vs response
+EDA: predictors vs response
+
 ```{r}
 # Install and load necessary libraries
 library(ggplot2)
