@@ -236,7 +236,7 @@ X <- as.matrix(imputed_data[, c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mor
 y <- imputed_data$Life.expectancy
 
 # Specify group indices
-group_indices <- list(c(1, 2, 3), c(4, 5, 6), c(7, 8, 9), c(10, 11, 12))
+group_indices <- list(c("Hepatitis.B", "Polio", "Diphtheria"), c("Adult.Mortality", "under.five.deaths", "HIV.AIDS"), c("percentage.expenditure", "GDP", "Income.composition.of.resources"), c("Alcohol", "Population", "BMI"))
 
 # Perform linear regression with group lasso
 fit <- grpreg(X, y, groups = group_indices, penalty = "grLasso")
