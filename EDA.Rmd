@@ -216,8 +216,11 @@ plot(Life.expectancy ~ Status, data = data,
      xlab = "Status", ylab = "Life Expectancy")
 plot(Life.expectancy~Alcohol,data=data, main = "Scatter Plot of Alcohol Consumption vs. Life Expectancy",
      xlab = "Alcohol Consumption", ylab = "Life Expectancy")
+
+data$Population <- pmin(data$Population, 300000000)
 plot(Life.expectancy~Population,data=data, main = "Scatter Plot of Population vs. Life Expectancy",
      xlab = "Population", ylab = "Life Expectancy")
+summary(data$Population)
 plot(Life.expectancy~BMI,data=data, main = "Scatter Plot of BMI vs. Life Expectancy",
      xlab = "BMI", ylab = "Life Expectancy")
 plot(Life.expectancy~thinness..1.19.years,data=data, main = "Thinness 10-19 years vs. Life Expectancy",
