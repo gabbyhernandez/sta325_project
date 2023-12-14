@@ -14,6 +14,8 @@ library(reshape2)
 library(ggpubr)
 library(moments)
 library(dplyr)
+library(missForest)
+class(data)
 ```
 
 ```{r}
@@ -49,49 +51,6 @@ summary(data$Life.expectancy)
 
 ```
 
-##Filling In Missing Values using imputation
-
-```{r}
-library(missForest)
-library(dplyr)
-class(data)
-```
-
-Need to Drop Country And Year First (Can add them back later)
-
-```{r}
-columns_to_exclude <- c("Year", "Country")
-
-# Select all columns except the ones to exclude
-le <- data %>% dplyr::select(-one_of(columns_to_exclude))
-```
-
-Change necessary variables into factors
-
-```{r}
-le$Status <- as.factor(le$Status)
-```
-
-The missForest package is specifically designed for imputing missing data in datasets with mixed types of variables (numeric and categorical). It uses a random forest-based imputation method.
-
-```{r}
-imputed_data <- missForest(le)
-
-imputed_data <- imputed_data$ximp
-```
-
-##Split Data into Training and Testing
-
-```{r}
-set.seed(123) 
-
-train_indices <- sample(seq_len(nrow(imputed_data)), size = 0.7 * nrow(imputed_data))
-
-data_train <- imputed_data[train_indices, ]
-
-data_test <- imputed_data[-train_indices, ]
-```
-
 ```{r}
 library(corrplot)
 ```
@@ -122,7 +81,7 @@ data$Polio <- pmin(data$Polio, 1000)
 
 plot(Life.expectancy~Hepatitis.B,data=data, col = ifelse(data$Status == "Developed", "blue", "red"), main = "Hepatitis B Immunization Among 1-Year-Olds (%) vs. Life Expectancy")
 plot(Life.expectancy~Measles,data=data, fill = Status, main = "# Reported Measles cases (per 1000) vs. Life Expectancy")
-plot(Life.expectancy~Polio,data=data, col = ifelse(data$Status == "Developed", "blue", "red"), main = "# Reported Polio cases (per 1000) vs. Life Expectancy")
+plot(Life.expectancy~Polio,data=data, col = ifelse(data$Status == "Developed", "blue", "red"), main = "Polio (Pol3) Immunization Among 1-Year-Olds (%) vs. Life Expectancy")
 plot(Life.expectancy~Diphtheria,data=data, col = ifelse(data$Status == "Developed", "blue", "red"), main = "DTP3 Immunization Among 1-Year-Olds (%) vs. Life Expectancy")
 ```
 
@@ -236,7 +195,49 @@ plot(Life.expectancy~thinness.5.9.years,data=data, main = "Scatter Plot of Thinn
 plot(Life.expectancy~Schooling,data=data, main = "Schooling vs. Life Expectancy",
      xlab = "Schooling", ylab = "Life Expectancy")
 ```
+##Data Wrangling
 
+Need to Drop Country And Year First (Can add them back later)
+
+```{r}
+columns_to_exclude <- c("Year", "Country")
+
+# Select all columns except the ones to exclude
+le <- data %>% dplyr::select(-one_of(columns_to_exclude))
+```
+
+Change Necessary Variables Into Factors
+```{r}
+le$Status <- as.factor(le$Status)
+le<- le %>%
+  filter(Income.composition.of.resources > 0.2)
+```
+
+##Filling In Missing Values using imputation
+
+
+The missForest package is specifically designed for imputing missing data in datasets with mixed types of variables (numeric and categorical). It uses a random forest-based imputation method.
+
+```{r}
+imputed_data <- missForest(le)
+
+imputed_data <- imputed_data$ximp
+```
+
+##Split Data into Training and Testing
+
+```{r}
+set.seed(123) 
+
+train_indices <- sample(seq_len(nrow(imputed_data)), size = 0.7 * nrow(imputed_data))
+
+data_train <- imputed_data[train_indices, ]
+
+data_test <- imputed_data[-train_indices, ]
+```
+
+
+##Group Lasso
 Group Lasso code:
 
 ```{r}
@@ -263,4 +264,3 @@ best_lambda
 best_coef
 ```
 
-hello
