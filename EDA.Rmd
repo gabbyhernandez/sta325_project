@@ -120,11 +120,15 @@ dev.off()
 data$Measles <- pmin(data$Measles, 1000)
 data$Polio <- pmin(data$Polio, 1000)
 
-plot(Life.expectancy~Hepatitis.B,data=data, main = "Hepatitis B Immunization Among 1-Year-Olds (%) vs. Life Expectancy")
+plot(Life.expectancy~Hepatitis.B,data=data, col = ifelse(data$Status == "Developed", "blue", "red"), main = "Hepatitis B Immunization Among 1-Year-Olds (%) vs. Life Expectancy")
 plot(Life.expectancy~Measles,data=data, fill = Status, main = "# Reported Measles cases (per 1000) vs. Life Expectancy")
-plot(Life.expectancy~Polio,data=data, main = "# Reported Polio cases (per 1000) vs. Life Expectancy")
-plot(Life.expectancy~Diphtheria,data=data, main = "DTP3 Immunization Among 1-Year-Olds (%) vs. Life Expectancy")
+plot(Life.expectancy~Polio,data=data, col = ifelse(data$Status == "Developed", "blue", "red"), main = "# Reported Polio cases (per 1000) vs. Life Expectancy")
+plot(Life.expectancy~Diphtheria,data=data, col = ifelse(data$Status == "Developed", "blue", "red"), main = "DTP3 Immunization Among 1-Year-Olds (%) vs. Life Expectancy")
+```
 
+```{r}
+immunization <- subset(data, Diphtheria < 20)
+immunization
 ```
 
 ##Emily EDA
@@ -149,6 +153,8 @@ plot(Life.expectancy~HIV.AIDS,data=data, main = "Deaths Caused by HIV/AIDS vs. L
 ```{r}
 # countries where income composition = 0 
 # If the income composition of resources component of the HDI is reported as 0 for a country, it suggests that the country's income is not derived from the specific factors or resources considered in that component of the HDI
+under5death <- subset(data, under.five.deaths > 1000)
+under5death
 adultmortality <- subset(data, Adult.Mortality < 150)
 adultmortality
 ```
@@ -239,7 +245,7 @@ X <- as.matrix(imputed_data[, c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mor
 y <- imputed_data$Life.expectancy
 
 # Specify group indices
-group_indices <- list(c("Hepatitis.B", "Polio", "Diphtheria"), c("Adult.Mortality", "under.five.deaths", "HIV.AIDS"), c("percentage.expenditure", "GDP", "Income.composition.of.resources"), c("Alcohol", "Population", "BMI"))
+group_indices <- list(c("Hepatitis.B", "Polio", "Diphtheria"), c("Adult.Mortality", "under.five.deaths", "HIV.AIDS"), c("GDP", "Income.composition.of.resources"), c("Alcohol", "Population", "BMI"))
 
 # Perform linear regression with group lasso
 fit <- grpreg(X, y, groups = group_indices, penalty = "grLasso")
