@@ -16,6 +16,7 @@ library(moments)
 library(dplyr)
 library(missForest)
 class(data)
+library(glmnet)
 ```
 
 ```{r}
@@ -262,5 +263,44 @@ best_lambda <- cv_fit$lambda.min
 best_coef <- coef(cv_fit, s = best_lambda)
 best_lambda
 best_coef
+```
+
+##Individual Lasso
+```{r}
+# Assuming 'Status' is a factor variable
+imputed_data$Status <- as.factor(imputed_data$Status)
+
+# Select variables for regression
+X <- as.matrix(imputed_data[, c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "percentage.expenditure", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI")])
+y <- imputed_data$Life.expectancy
+
+# Convert 'Status' to numeric (0 or 1)
+imputed_data$Status_numeric <- as.numeric(imputed_data$Status) - 1
+
+# Combine predictors
+predictors <- c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "percentage.expenditure", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI")
+
+# Create interaction terms
+interaction_terms <- c()
+for (var_name in predictors) {
+  interaction_name <- paste0(var_name, "_Status")
+  imputed_data[[interaction_name]] <- imputed_data[[var_name]] * imputed_data$Status_numeric
+  interaction_terms <- c(interaction_terms, interaction_name)
+}
+
+# Combine predictors and interaction terms
+all_predictors <- c(predictors, interaction_terms)
+
+# Perform linear regression with Lasso using glmnet
+library(glmnet)
+
+# Fit model with Lasso
+fit <- cv.glmnet(as.matrix(imputed_data[, all_predictors, drop = FALSE]), y, alpha = 1, lambda.min.ratio = 1e-8, standardize = FALSE)
+
+# Display coefficients for the optimal lambda
+best_lambda <- fit$lambda.min
+cat("Optimal lambda:", best_lambda, "\n")
+coef(fit, s = "lambda.min")
+
 ```
 
