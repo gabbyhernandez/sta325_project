@@ -558,20 +558,6 @@ plot(predictions_gam1_test, residuals_gam1, main = "Residuals vs. Fitted", xlab 
 abline(h = 0, col = "red", lty = 2)
 
 
-# Assuming you have already made predictions on the test set for gam.ns
-# predictions_gam_ns_test <- predict(gam.ns, newdata = data_test, type = "response")
-
-# Calculate residuals
-residuals_gam_ns <- data_test$Life.expectancy - predictions_gam_ns_test
-
-# QQ Plot
-qqnorm(residuals_gam_ns)
-qqline(residuals_gam_ns, col = 2)
-
-# Residual Plot
-plot(predictions_gam_ns_test, residuals_gam_ns, main = "Residuals vs. Fitted", xlab = "Fitted values", ylab = "Residuals")
-abline(h = 0, col = "red", lty = 2)
-
 
 # Assuming you have already made predictions on the test set for gam2
 # predictions_gam2_test <- predict(gam2, newdata = data_test, type = "response")
@@ -586,6 +572,25 @@ qqline(residuals_gam2, col = 2)
 # Residual Plot
 plot(predictions_gam2_test, residuals_gam2, main = "Residuals vs. Fitted", xlab = "Fitted values", ylab = "Residuals")
 abline(h = 0, col = "red", lty = 2)
+
+```
+```{r}
+# Assuming you have models gam1, gam.ns, and gam2 already fitted
+
+# Calculate AIC for each model
+aic_gam1 <- AIC(gam1)
+aic_gam2 <- AIC(gam2)
+
+# Calculate BIC for each model
+bic_gam1 <- BIC(gam1)
+bic_gam2 <- BIC(gam2)
+
+# Print AIC and BIC values
+cat("AIC for gam1:", aic_gam1, "\n")
+cat("AIC for gam2:", aic_gam2, "\n")
+
+cat("BIC for gam1:", bic_gam1, "\n")
+cat("BIC for gam2:", bic_gam2, "\n")
 
 ```
 
