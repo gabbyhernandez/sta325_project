@@ -535,8 +535,8 @@ cat("R-squared (R^2) for gam2 on test set:", r_squared_gam2, "\n")
 ```{r}
 
 # different models on population
-gam.m1 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(GDP) + s(BMI), data = data_train)
-gam.m2 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(HIV.AIDS) + GDP + Population + s(BMI), data = data_train)
+gam.m1 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(Population) + s(BMI), data = data_train)
+gam.m2 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(HIV.AIDS) + GDP + s(Population) + s(BMI), data = data_train)
 plot(gam.m2)
 anova(gam.m1, gam.m2, gam2, test = "F")
 
