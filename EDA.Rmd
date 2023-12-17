@@ -238,7 +238,7 @@ data_train <- imputed_data[train_indices, ]
 data_test <- imputed_data[-train_indices, ]
 ```
 
-##Group Lasso Group Lasso code:
+##Group Lasso code:
 
 ```{r}
 library(grpreg)
@@ -264,7 +264,7 @@ best_lambda
 best_coef
 ```
 
-##Individual Lasso
+##Individual Lasso with Status as Interaction Effect (lasso 1)
 
 ```{r}
 # Assuming 'Status' is a factor variable
@@ -303,3 +303,41 @@ cat("Optimal lambda:", best_lambda, "\n")
 coef(fit, s = "lambda.min")
 
 ```
+
+# Lasso without Interaction (lasso 2):
+```{r}
+# Select variables for regression
+X <- as.matrix(imputed_data[, c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI", "Schooling")])
+y <- imputed_data$Life.expectancy
+
+# Perform linear regression with Lasso using glmnet
+library(glmnet)
+
+# Fit model with Lasso
+fit <- cv.glmnet(X, y, alpha = 1, lambda.min.ratio = 1e-8, standardize = FALSE)
+
+# Display coefficients for the optimal lambda
+best_lambda <- fit$lambda.min
+cat("Optimal lambda:", best_lambda, "\n")
+coef(fit, s = "lambda.min")
+```
+
+# GAM:
+
+```{r}
+library(mgcv)
+library(gam)
+#gam model from lasso 1
+gam1 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(GDP) +s(Population) + s(BMI) +s(Adult.Mortality_Status) + s(under.five.deaths_Status) + s(GDP_Status) + s(Population_Status), data = imputed_data)
+plot(gam1, se = TRUE, col = "blue")
+summary(gam1)
+```
+
+```{r}
+#gam model for lasso 2
+gam2<- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(HIV.AIDS) + s(GDP) +s(Population) + s(BMI), data = imputed_data)
+summary(gam2)
+plot(gam2, se = TRUE, col = "blue")
+```
+
+
