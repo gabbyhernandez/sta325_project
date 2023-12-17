@@ -302,6 +302,18 @@ best_lambda <- fit$lambda.min
 cat("Optimal lambda:", best_lambda, "\n")
 coef(fit, s = "lambda.min")
 
+# Make predictions on the test set
+predictions <- predict(fit, newx = as.matrix(imputed_data[, all_predictors, drop = FALSE]), s = best_lambda)
+
+# Calculate Mean Squared Error (MSE)
+mse <- mean((predictions - y)^2)
+cat("Mean Squared Error (MSE):", mse, "\n")
+
+# Calculate R-squared (R^2)
+ss_residual <- sum((y - predictions)^2)
+ss_total <- sum((y - mean(y))^2)
+r_squared <- 1 - (ss_residual / ss_total)
+cat("R-squared (R^2):", r_squared, "\n")
 ```
 
 # Lasso without Interaction (lasso 2):
@@ -320,6 +332,19 @@ fit <- cv.glmnet(X, y, alpha = 1, lambda.min.ratio = 1e-8, standardize = FALSE)
 best_lambda <- fit$lambda.min
 cat("Optimal lambda:", best_lambda, "\n")
 coef(fit, s = "lambda.min")
+
+# Make predictions on the test set
+predictions <- predict(fit, newx = X, s = best_lambda)
+
+# Calculate Mean Squared Error (MSE)
+mse <- mean((predictions - y)^2)
+cat("Mean Squared Error (MSE):", mse, "\n")
+
+# Calculate R-squared (R^2)
+ss_residual <- sum((y - predictions)^2)
+ss_total <- sum((y - mean(y))^2)
+r_squared <- 1 - (ss_residual / ss_total)
+cat("R-squared (R^2):", r_squared, "\n")
 ```
 
 # GAM:
@@ -331,6 +356,19 @@ library(gam)
 gam1 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(GDP) +s(Population) + s(BMI) +s(Adult.Mortality_Status) + s(under.five.deaths_Status) + s(GDP_Status) + s(Population_Status), data = imputed_data)
 plot(gam1, se = TRUE, col = "blue")
 summary(gam1)
+
+# Make predictions on the test set
+predictions <- predict(gam1, newdata = imputed_data, type = "response")
+
+# Calculate Mean Squared Error (MSE)
+mse <- mean((predictions - imputed_data$Life.expectancy)^2)
+cat("Mean Squared Error (MSE):", mse, "\n")
+
+# Calculate R-squared (R^2)
+ss_residual <- sum((imputed_data$Life.expectancy - predictions)^2)
+ss_total <- sum((imputed_data$Life.expectancy - mean(imputed_data$Life.expectancy))^2)
+r_squared <- 1 - (ss_residual / ss_total)
+cat("R-squared (R^2):", r_squared, "\n")
 ```
 
 ```{r}
@@ -338,6 +376,19 @@ summary(gam1)
 gam.ns <- lm(Life.expectancy ~ ns(Polio) + ns(Diphtheria) + ns(GDP) + ns(Population) + ns(BMI) + ns(Adult.Mortality_Status) + ns(under.five.deaths_Status) + ns(GDP_Status) + ns(Population_Status), data = imputed_data)
 plot.Gam(gam.ns, se = TRUE, col = "blue")
 summary(gam.ns)
+
+# Make predictions on the test set
+predictions <- predict(gam.ns, newdata = imputed_data, type = "response")
+
+# Calculate Mean Squared Error (MSE)
+mse <- mean((predictions - imputed_data$Life.expectancy)^2)
+cat("Mean Squared Error (MSE):", mse, "\n")
+
+# Calculate R-squared (R^2)
+ss_residual <- sum((imputed_data$Life.expectancy - predictions)^2)
+ss_total <- sum((imputed_data$Life.expectancy - mean(imputed_data$Life.expectancy))^2)
+r_squared <- 1 - (ss_residual / ss_total)
+cat("R-squared (R^2):", r_squared, "\n")
 ```
 
 
@@ -346,15 +397,32 @@ summary(gam.ns)
 gam2<- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(HIV.AIDS) + s(GDP) +s(Population) + s(BMI), data = imputed_data)
 summary(gam2)
 plot(gam2, se = TRUE, col = "blue")
+
+# Make predictions on the test set
+predictions <- predict(gam2, newdata = imputed_data, type = "response")
+
+# Calculate Mean Squared Error (MSE)
+mse <- mean((predictions - imputed_data$Life.expectancy)^2)
+cat("Mean Squared Error (MSE):", mse, "\n")
+
+# Calculate R-squared (R^2)
+ss_residual <- sum((imputed_data$Life.expectancy - predictions)^2)
+ss_total <- sum((imputed_data$Life.expectancy - mean(imputed_data$Life.expectancy))^2)
+r_squared <- 1 - (ss_residual / ss_total)
+cat("R-squared (R^2):", r_squared, "\n")
+
 ```
 
 
 #Testing for Linearity 
 ```{r}
+
+# different models on population
 gam.m1 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(GDP) + s(BMI), data = imputed_data)
-gam.m2 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(HIV.AIDS) + s(GDP) + s(Population, 2) + s(BMI), data = imputed_data)
+gam.m2 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(HIV.AIDS) + GDP + Population + s(BMI), data = imputed_data)
 plot(gam.m2)
 anova(gam.m1, gam.m2, gam2, test = "F")
+
 ```
 
 ```{r}
