@@ -327,11 +327,19 @@ coef(fit, s = "lambda.min")
 ```{r}
 library(mgcv)
 library(gam)
-#gam model from lasso 1
+#gam model from lasso 1 using smoothing splines
 gam1 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(GDP) +s(Population) + s(BMI) +s(Adult.Mortality_Status) + s(under.five.deaths_Status) + s(GDP_Status) + s(Population_Status), data = imputed_data)
 plot(gam1, se = TRUE, col = "blue")
 summary(gam1)
 ```
+
+```{r}
+#gam model from lasso 1 using natural splines
+gam.ns <- lm(Life.expectancy ~ ns(Polio) + ns(Diphtheria) + ns(GDP) + ns(Population) + ns(BMI) + ns(Adult.Mortality_Status) + ns(under.five.deaths_Status) + ns(GDP_Status) + ns(Population_Status), data = imputed_data)
+plot.Gam(gam.ns, se = TRUE, col = "blue")
+summary(gam.ns)
+```
+
 
 ```{r}
 #gam model for lasso 2
@@ -340,4 +348,29 @@ summary(gam2)
 plot(gam2, se = TRUE, col = "blue")
 ```
 
+
+#Testing for Linearity 
+```{r}
+gam.m1 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(GDP) + s(BMI), data = imputed_data)
+gam.m2 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(HIV.AIDS) + s(GDP) + s(Population, 2) + s(BMI), data = imputed_data)
+plot(gam.m2)
+anova(gam.m1, gam.m2, gam2, test = "F")
+```
+
+```{r}
+AIC(gam1)
+BIC(gam1)
+residuals <- residuals(gam1)
+plot(residuals)
+
+AIC(gam2)
+BIC(gam2)
+residuals <- residuals(gam2)
+plot(residuals)
+
+AIC(gam.m2)
+BIC(gam.m2)
+residuals <- residuals(gam.m2)
+plot(residuals)
+```
 
