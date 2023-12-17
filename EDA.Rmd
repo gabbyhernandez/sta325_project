@@ -354,8 +354,14 @@ library(mgcv)
 library(gam)
 #gam model from lasso 1 using smoothing splines
 gam1 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(GDP) +s(Population) + s(BMI) +s(Adult.Mortality_Status) + s(under.five.deaths_Status) + s(GDP_Status) + s(Population_Status), data = imputed_data)
+# Set up a custom layout with 3 rows and 3 columns
+par(mfrow = c(3, 3))
+
+# Plot individual smooth terms
 plot(gam1, se = TRUE, col = "blue")
 summary(gam1)
+# Reset the graphical parameters
+par(mfrow = c(1, 1))
 
 # Make predictions on the test set
 predictions <- predict(gam1, newdata = imputed_data, type = "response")
@@ -395,8 +401,18 @@ cat("R-squared (R^2):", r_squared, "\n")
 ```{r}
 #gam model for lasso 2
 gam2<- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(HIV.AIDS) + s(GDP) +s(Population) + s(BMI), data = imputed_data)
+# Set up a custom layout with 2 rows and 4 columns
+layout(matrix(c(1, 2, 3, 4, 5, 6, 7, 8), ncol = 4, byrow = TRUE))
+
+# Plot the summary
 summary(gam2)
+
+# Plot individual smooth terms
 plot(gam2, se = TRUE, col = "blue")
+
+# Reset the layout
+layout(1)
+
 
 # Make predictions on the test set
 predictions <- predict(gam2, newdata = imputed_data, type = "response")
@@ -441,4 +457,9 @@ BIC(gam.m2)
 residuals <- residuals(gam.m2)
 plot(residuals)
 ```
+
+
+
+$$Life \ Expectancy = \beta_0 +f_1(Polio) +f_2(Diphtheria)+f_3(GDP) +f_4(Population) +f_5(BMI) +f_6(Adult.Mortality\_Status) + \\ f_7(under.five.deaths\_Status) +f_8(GDP\_Status) + f_9(Population\_Status) + \epsilon_i$$
+$$Life \ Expectancy = \beta_0 +f_1(Polio) +f_2(Diphtheria)+f_3(Adult.Mortality) +f_4(under.five.deaths) +f_5(HIV.AIDS) +f_6(GDP) + \\ f_7(Population) +f_8(BMI) + \epsilon_i$$
 
