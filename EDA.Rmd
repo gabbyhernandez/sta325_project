@@ -242,7 +242,7 @@ data_test <- imputed_data[-train_indices, ]
 
 ```{r}
 library(grpreg)
-X <- as.matrix(imputed_data[, c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "percentage.expenditure", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI", "Schooling")])
+X <- as.matrix(imputed_data[, c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI", "Schooling")])
 y <- imputed_data$Life.expectancy
 
 # Specify group indices
@@ -271,14 +271,14 @@ best_coef
 imputed_data$Status <- as.factor(imputed_data$Status)
 
 # Select variables for regression
-X <- as.matrix(imputed_data[, c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "percentage.expenditure", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI", "Schooling")])
+X <- as.matrix(imputed_data[, c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI", "Schooling")])
 y <- imputed_data$Life.expectancy
 
 # Convert 'Status' to numeric (0 or 1)
 imputed_data$Status_numeric <- as.numeric(imputed_data$Status) - 1
 
 # Combine predictors
-predictors <- c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "percentage.expenditure", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI", "Schooling")
+predictors <- c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI", "Schooling")
 
 # Create interaction terms
 interaction_terms <- c()
