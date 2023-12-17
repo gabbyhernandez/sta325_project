@@ -347,13 +347,66 @@ r_squared <- 1 - (ss_residual / ss_total)
 cat("R-squared (R^2):", r_squared, "\n")
 ```
 
+#Create interactions for data_train & data_test:
+```{r}
+# Assuming 'Status' is a factor variable
+data_train$Status <- as.factor(data_train$Status)
+
+# Select variables for regression
+X <- as.matrix(data_train[, c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI", "Schooling")])
+y <- data_train$Life.expectancy
+
+# Convert 'Status' to numeric (0 or 1)
+data_train$Status_numeric <- as.numeric(data_train$Status) - 1
+
+# Combine predictors
+predictors <- c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI", "Schooling")
+
+# Create interaction terms
+interaction_terms <- c()
+for (var_name in predictors) {
+  interaction_name <- paste0(var_name, "_Status")
+  data_train[[interaction_name]] <- data_train[[var_name]] * data_train$Status_numeric
+  interaction_terms <- c(interaction_terms, interaction_name)
+}
+
+# Combine predictors and interaction terms
+all_predictors <- c(predictors, interaction_terms)
+```
+
+```{r}
+# Assuming 'Status' is a factor variable
+data_test$Status <- as.factor(data_test$Status)
+
+# Select variables for regression
+X <- as.matrix(data_test[, c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI", "Schooling")])
+y <- data_test$Life.expectancy
+
+# Convert 'Status' to numeric (0 or 1)
+data_test$Status_numeric <- as.numeric(data_test$Status) - 1
+
+# Combine predictors
+predictors <- c("Hepatitis.B", "Polio", "Diphtheria", "Adult.Mortality", "under.five.deaths", "HIV.AIDS", "GDP", "Income.composition.of.resources", "Alcohol", "Population", "BMI", "Schooling")
+
+# Create interaction terms
+interaction_terms <- c()
+for (var_name in predictors) {
+  interaction_name <- paste0(var_name, "_Status")
+  data_test[[interaction_name]] <- data_test[[var_name]] * data_test$Status_numeric
+  interaction_terms <- c(interaction_terms, interaction_name)
+}
+
+# Combine predictors and interaction terms
+all_predictors <- c(predictors, interaction_terms)
+```
+
 # GAM:
 
 ```{r}
 library(mgcv)
 library(gam)
 #gam model from lasso 1 using smoothing splines
-gam1 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(GDP) +s(Population) + s(BMI) +s(Adult.Mortality_Status) + s(under.five.deaths_Status) + s(GDP_Status) + s(Population_Status), data = imputed_data)
+gam1 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(GDP) +s(Population) + s(BMI) +s(Adult.Mortality_Status) + s(under.five.deaths_Status) + s(GDP_Status) + s(Population_Status), data = data_train)
 # Set up a custom layout with 3 rows and 3 columns
 par(mfrow = c(3, 3))
 
@@ -364,35 +417,35 @@ summary(gam1)
 par(mfrow = c(1, 1))
 
 # Make predictions on the test set
-predictions <- predict(gam1, newdata = imputed_data, type = "response")
+predictions <- predict(gam1, newdata = data_train, type = "response")
 
 # Calculate Mean Squared Error (MSE)
-mse <- mean((predictions - imputed_data$Life.expectancy)^2)
+mse <- mean((predictions - data_train$Life.expectancy)^2)
 cat("Mean Squared Error (MSE):", mse, "\n")
 
 # Calculate R-squared (R^2)
-ss_residual <- sum((imputed_data$Life.expectancy - predictions)^2)
-ss_total <- sum((imputed_data$Life.expectancy - mean(imputed_data$Life.expectancy))^2)
+ss_residual <- sum((data_train$Life.expectancy - predictions)^2)
+ss_total <- sum((data_train$Life.expectancy - mean(data_train$Life.expectancy))^2)
 r_squared <- 1 - (ss_residual / ss_total)
 cat("R-squared (R^2):", r_squared, "\n")
 ```
 
 ```{r}
 #gam model from lasso 1 using natural splines
-gam.ns <- lm(Life.expectancy ~ ns(Polio) + ns(Diphtheria) + ns(GDP) + ns(Population) + ns(BMI) + ns(Adult.Mortality_Status) + ns(under.five.deaths_Status) + ns(GDP_Status) + ns(Population_Status), data = imputed_data)
+gam.ns <- lm(Life.expectancy ~ ns(Polio) + ns(Diphtheria) + ns(GDP) + ns(Population) + ns(BMI) + ns(Adult.Mortality_Status) + ns(under.five.deaths_Status) + ns(GDP_Status) + ns(Population_Status), data = data_train)
 plot.Gam(gam.ns, se = TRUE, col = "blue")
 summary(gam.ns)
 
 # Make predictions on the test set
-predictions <- predict(gam.ns, newdata = imputed_data, type = "response")
+predictions <- predict(gam.ns, newdata = data_train, type = "response")
 
 # Calculate Mean Squared Error (MSE)
-mse <- mean((predictions - imputed_data$Life.expectancy)^2)
+mse <- mean((predictions - data_train$Life.expectancy)^2)
 cat("Mean Squared Error (MSE):", mse, "\n")
 
 # Calculate R-squared (R^2)
-ss_residual <- sum((imputed_data$Life.expectancy - predictions)^2)
-ss_total <- sum((imputed_data$Life.expectancy - mean(imputed_data$Life.expectancy))^2)
+ss_residual <- sum((data_train$Life.expectancy - predictions)^2)
+ss_total <- sum((data_train$Life.expectancy - mean(data_train$Life.expectancy))^2)
 r_squared <- 1 - (ss_residual / ss_total)
 cat("R-squared (R^2):", r_squared, "\n")
 ```
@@ -400,7 +453,7 @@ cat("R-squared (R^2):", r_squared, "\n")
 
 ```{r}
 #gam model for lasso 2
-gam2<- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(HIV.AIDS) + s(GDP) +s(Population) + s(BMI), data = imputed_data)
+gam2<- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(HIV.AIDS) + s(GDP) +s(Population) + s(BMI), data = data_train)
 # Set up a custom layout with 2 rows and 4 columns
 layout(matrix(c(1, 2, 3, 4, 5, 6, 7, 8), ncol = 4, byrow = TRUE))
 
@@ -415,17 +468,65 @@ layout(1)
 
 
 # Make predictions on the test set
-predictions <- predict(gam2, newdata = imputed_data, type = "response")
+predictions <- predict(gam2, newdata = data_train, type = "response")
 
 # Calculate Mean Squared Error (MSE)
-mse <- mean((predictions - imputed_data$Life.expectancy)^2)
+mse <- mean((predictions - data_train$Life.expectancy)^2)
 cat("Mean Squared Error (MSE):", mse, "\n")
 
 # Calculate R-squared (R^2)
-ss_residual <- sum((imputed_data$Life.expectancy - predictions)^2)
-ss_total <- sum((imputed_data$Life.expectancy - mean(imputed_data$Life.expectancy))^2)
+ss_residual <- sum((data_train$Life.expectancy - predictions)^2)
+ss_total <- sum((data_train$Life.expectancy - mean(data_train$Life.expectancy))^2)
 r_squared <- 1 - (ss_residual / ss_total)
 cat("R-squared (R^2):", r_squared, "\n")
+
+```
+#Fit to testing data
+```{r}
+# Make predictions on the test set for gam1
+predictions_gam1_test <- predict(gam1, newdata = data_test, type = "response")
+
+# Calculate Mean Squared Error (MSE) for gam1
+mse_gam1 <- mean((predictions_gam1_test - data_test$Life.expectancy)^2)
+cat("Mean Squared Error (MSE) for gam1 on test set:", mse_gam1, "\n")
+
+# Calculate R-squared (R^2) for gam1
+ss_residual_gam1 <- sum((data_test$Life.expectancy - predictions_gam1_test)^2)
+ss_total_gam1 <- sum((data_test$Life.expectancy - mean(data_test$Life.expectancy))^2)
+r_squared_gam1 <- 1 - (ss_residual_gam1 / ss_total_gam1)
+cat("R-squared (R^2) for gam1 on test set:", r_squared_gam1, "\n")
+
+```
+
+```{r}
+# Make predictions on the test set for gam.ns
+predictions_gam_ns_test <- predict(gam.ns, newdata = data_test, type = "response")
+
+# Calculate Mean Squared Error (MSE) for gam.ns
+mse_gam_ns <- mean((predictions_gam_ns_test - data_test$Life.expectancy)^2)
+cat("Mean Squared Error (MSE) for gam.ns on test set:", mse_gam_ns, "\n")
+
+# Calculate R-squared (R^2) for gam.ns
+ss_residual_gam_ns <- sum((data_test$Life.expectancy - predictions_gam_ns_test)^2)
+ss_total_gam_ns <- sum((data_test$Life.expectancy - mean(data_test$Life.expectancy))^2)
+r_squared_gam_ns <- 1 - (ss_residual_gam_ns / ss_total_gam_ns)
+cat("R-squared (R^2) for gam.ns on test set:", r_squared_gam_ns, "\n")
+
+```
+
+```{r}
+# Make predictions on the test set for gam2
+predictions_gam2_test <- predict(gam2, newdata = data_test, type = "response")
+
+# Calculate Mean Squared Error (MSE) for gam2
+mse_gam2 <- mean((predictions_gam2_test - data_test$Life.expectancy)^2)
+cat("Mean Squared Error (MSE) for gam2 on test set:", mse_gam2, "\n")
+
+# Calculate R-squared (R^2) for gam2
+ss_residual_gam2 <- sum((data_test$Life.expectancy - predictions_gam2_test)^2)
+ss_total_gam2 <- sum((data_test$Life.expectancy - mean(data_test$Life.expectancy))^2)
+r_squared_gam2 <- 1 - (ss_residual_gam2 / ss_total_gam2)
+cat("R-squared (R^2) for gam2 on test set:", r_squared_gam2, "\n")
 
 ```
 
@@ -434,8 +535,8 @@ cat("R-squared (R^2):", r_squared, "\n")
 ```{r}
 
 # different models on population
-gam.m1 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(GDP) + s(BMI), data = imputed_data)
-gam.m2 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(HIV.AIDS) + GDP + Population + s(BMI), data = imputed_data)
+gam.m1 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(GDP) + s(BMI), data = data_train)
+gam.m2 <- gam(Life.expectancy ~ s(Polio) + s(Diphtheria) + s(Adult.Mortality) + s(under.five.deaths) + s(HIV.AIDS) + GDP + Population + s(BMI), data = data_train)
 plot(gam.m2)
 anova(gam.m1, gam.m2, gam2, test = "F")
 
