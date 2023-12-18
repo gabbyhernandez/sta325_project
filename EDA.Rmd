@@ -347,6 +347,45 @@ r_squared <- 1 - (ss_residual / ss_total)
 cat("R-squared (R^2):", r_squared, "\n")
 ```
 
+#Model Diagnostics:
+```{r}
+# Load necessary libraries
+# Load necessary libraries
+library(ggplot2)
+library(MASS)  # For truehist function
+
+# Function to create QQ plot and residual plot
+create_plots <- function(predictions, y, title) {
+  # Residuals
+  residuals <- y - predictions
+  
+  # QQ plot
+  qq <- ggplot(data.frame(residuals = residuals), aes(sample = residuals)) +
+    stat_qq() +
+    stat_qq_line() +
+    labs(title = paste("QQ Plot -", title))
+  
+  # Residual plot with smoother
+  res_plot <- ggplot(data.frame(fitted = predictions, residuals = residuals), aes(x = fitted, y = residuals)) +
+    geom_point() +
+    geom_smooth(aes(x = fitted, y = residuals), se = FALSE, method = "loess", color = "blue") +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+    labs(title = paste("Residual Plot -", title), x = "Fitted Values", y = "Residuals")
+  
+  # Display plots
+  print(qq)
+  print(res_plot)
+}
+
+# Create QQ plot and residual plot for lasso 1 (with interaction terms)
+create_plots(predictions, y, "Lasso 1 (with Interaction)")
+
+# Create QQ plot and residual plot for lasso 2 (without interaction terms)
+predictions_lasso2 <- predict(fit, newx = X, s = best_lambda)
+create_plots(predictions_lasso2, y, "Lsso 2 (without Interaction)")
+
+```
+
 #Create interactions for data_train & data_test:
 ```{r}
 # Assuming 'Status' is a factor variable
